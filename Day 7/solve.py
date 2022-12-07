@@ -7,39 +7,26 @@ Created on Wed Dec 7 08:53:57 2022
 
 import os
 from re import search
+import pdb
 
 os.chdir('C:/Users/chris/Dropbox/Programming Practice/Advent of Code 2022/Day 7')
 
 with open('Input/input.txt') as f:
     rows = f.readlines()
 
-# rows = []
-# for line in lines:
-#     line = line.strip('\n')
-#     rows.append(line)
-
-# '$ cd /' = change directory to outer most
-# '$ cd abc' = change directory to abc
-# '$ cd x' = find child directory x and change to it
-# '$ cd ..' = find parent directory and change to it
-# '$ ls' = list directories and files in current directory
-# '123 abc' = directory has file abc with size 123
-# 'dir xyz' = current directory contains directory xyz
-
-# try reproducing example
 root = os.getcwd()
 child_dir = os.path.join(root, 'part1')
 os.chdir(child_dir)
 root = os.getcwd()
 
 # create directories of files where value is the filename
-for row in rows[0:26]:
+for row in rows:
     row = row.strip('\n')
     current_dir = os.getcwd()
-    if search('cd', row):
-        if search('cd /', row):
+    if search('cd', row[2:4]):
+        if row == '$ cd /':
             os.chdir(root)
-        elif search('cd ..', row):
+        elif row == '$ cd ..':
             os.chdir('..')
         else:
             child_dir = os.path.join(current_dir, row[5:])
@@ -55,6 +42,8 @@ for row in rows[0:26]:
         
 # get list of directories
 dir_list = [x[0] for x in os.walk(root)]
+
+# get sums for directories <= 100,000
 file_ints = []
 sums_under_100000 = []
 for d in dir_list:
@@ -67,7 +56,23 @@ for d in dir_list:
         sums_under_100000.append(file_sum)
     file_ints = []
 
-print(sum(sums_under_100000))    
-  
-            
-        
+print(sum(sums_under_100000))
+
+# part 2: find size of smallest directory that provides 30,000,000 of available space
+file_ints = []
+sums = []
+for d in dir_list:
+    print(d)
+    for (dirpath, dirnames, filenames) in os.walk(d):
+        file_ints += [int(file) for file in filenames]
+    file_sum = sum(file_ints)
+    print(file_sum)
+    sums.append(file_sum)
+    file_ints = []
+
+sums.sort()
+available = 70000000 - max(sums)
+needed = 30000000 - available 
+smallest_exceeding_needed = next(x for x, val in enumerate(sums) if val > needed)
+
+print(sums[smallest_exceeding_needed])
