@@ -34,7 +34,7 @@ def rope_task(instructions, knots):
                 updown_dist = ropesegs[i][0]-ropesegs[i+1][0]
                 leftright_dist = ropesegs[i][1]-ropesegs[i+1][1]
                 
-                # change tail state if distance exceeds rope length
+                # change child knot state if distance exceeds parent knot state
                 if updown_dist**2 + leftright_dist**2 > 2: 
                     ropesegs[i+1][0] += np.sign(updown_dist)
                     ropesegs[i+1][1] += np.sign(leftright_dist)
